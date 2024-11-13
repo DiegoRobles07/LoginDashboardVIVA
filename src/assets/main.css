@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --p-select-focus-ring-color: rgba(18, 18, 19, 0.756) !important;
+  --p-paginator-border-radius: 0 0 0.5rem 0.5rem !important;
+}
+.p-datepicker-day-selected {
+  background-color: #3e9cbb !important;
+}
+.p-datatable-table > thead > tr:first-of-type > th:first-of-type {
+  border-radius: 0.5rem 0 0 0 !important;
+}
+
+.p-datatable-table > thead > tr:first-of-type > th:last-of-type {
+  border-radius: 0 0.5rem 0 0 !important;
+}
+
+.p-inputtext {
+  border-radius: 0.6rem !important;
+}
+.p-paginator {
+  background-color: #3e9cbb !important;
+}
+.p-paginator-page {
+  background-color: #f0f9fb !important;
+  border-radius: 1rem !important;
+  color: rgb(0, 0, 0) !important;
+}
+.p-paginator-next,
+.p-paginator-prev {
+  background-color: #2b6f8f !important;
+  color: white !important;
+}
+.p-paginator-next:hover,
+.p-paginator-prev:hover {
+  background-color: #0b2e41 !important;
+  color: white !important;
+}
+
+.p-select-list-container {
+  background-color: #f0f9fb !important;
+  color: white;
+}
+.btnAction {
+  background-color: #3e9cbb !important;
+  color: rgb(255, 255, 255) !important;
+}
+.btnAction:hover {
+  background-color: #2d7188 !important;
+}
+.p-paginator-page-selected {
+  background-color: #0b2e41 !important;
+  color: white !important;
+}
+.p-inputwrapper-focus {
+  border-color: aquamarine !important;
+}
+.p-select-option-selected {
+  background-color: #0b2e41 !important;
+  color: white !important;
+}

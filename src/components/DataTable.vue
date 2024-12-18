@@ -37,7 +37,8 @@
                         <td class="border px-2 py-1">{{ empleado.nombre }}</td>
                         <template v-for="semana in data.semanas" :key="semana.numero">
                             <td v-for="(minutos, i) in semana.empleados?.[index]?.minutos || []" :key="i"
-                                :class="getCellClass(minutos)" class="border px-2 py-1">
+                                :class="getCellClass(minutos)" class="border px-2 py-1 cursor-pointer"
+                                @click="$emit('cell-click', { agente: empleado, dia: semana.dias[i], minutos })">
                                 {{ minutos || "-" }}
                             </td>
                             <td class="border px-2 py-1">{{ semana.empleados?.[index]?.totalSemanal || "-" }}</td>

@@ -47,10 +47,9 @@
 
     <!-- Botón de Modificar varios -->
     <div>
-      <button type="button" @click="emitFilters"
-        class="mt-5 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-gray-800 disabled:opacity-50"
-        :disabled="selectedEmployees.length === 0">
-        {{ selectedEmployees.length > 1 ? "Modificar varios" : "Modificar" }}
+      <button :disabled="!selectedEmployees || selectedEmployees.length === 0" @click="$emit('open-mass-edit')"
+        class="mt-5 btn-modify px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700">
+        Modificar
       </button>
     </div>
   </div>
@@ -146,3 +145,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.btn-modify {
+  transition: background-color 0.3s;
+}
+</style>

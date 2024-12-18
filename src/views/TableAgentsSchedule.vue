@@ -1,69 +1,134 @@
 <template>
+  <div>
     <div class="mt-3">
-        <DataTable :data="filteredData" :selected-employees="selectedEmployees"
-            @update-selected="updateSelectedEmployees" />
+      <!-- Tabla principal -->
+      <DataTable :data="filteredData" @cell-click="handleCellClick" />
+
+      <!-- Modal dinámico -->
+      <div v-if="showModal" class="modal-backdrop">
+        <div class="modal-content">
+          <header>
+            <h2>Editar Día</h2>
+          </header>
+          <main>
+            <form @submit.prevent="saveEdit">
+              <label>Empleado:
+                <input v-model="currentAgent.nombre" type="text" class="input" disabled />
+              </label>
+              <label>Grupo:
+                <input v-model="currentAgent.grupo" type="text" class="input" disabled />
+              </label>
+              <label>Día Seleccionado:
+                <input v-model="selectedDay" type="text" class="input" disabled />
+              </label>
+              <label>Minutos:
+                <input v-model="selectedMinutes" type="number" class="input" />
+              </label>
+              <button type="submit" class="btn-save">Guardar</button>
+              <button type="button" @click="closeModal" class="btn-close">Cancelar</button>
+            </form>
+          </main>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import DataTable from '../components/DataTable.vue';
+import DataTable from '@/components/DataTable.vue';
 
-// Datos iniciales para la tabla
+const showModal = ref(false);
+const currentAgent = ref({});
+const selectedDay = ref('');
+const selectedMinutes = ref('');
+
 const tableData = ref({
-    semanas: [
-        {
-            numero: 48,
-            dias: ["Do-01", "Lu-02", "Ma-03", "Mi-04", "Ju-05", "Vi-06", "Sa-07"],
-            empleados: [
-                { grupo: "Admins", nombre: "Anthony Vasquez", minutos: [143, 13, 10, 15, 1440, 9, 1440], totalSemanal: 2914 },
-                { grupo: "Admins", nombre: "Diego Robles", minutos: [1440, 1440, 1440, 1440, 1440, 1440, 1440], totalSemanal: 10080 },
-            ],
-        },
-        {
-            numero: 49,
-            dias: ["Do-08", "Lu-09", "Ma-10", "Mi-11", "Ju-12", "Vi-13", "Sa-14"],
-            empleados: [
-                { grupo: "Customer Services", nombre: "Jocelyn Santos", minutos: [0, 0, 0, 2, 553, 0, 0], totalSemanal: 555 },
-            ],
-        },
-    ],
-    totalMensual: [
-        { empleado: "Anthony Vasquez", total: 3057 },
-        { empleado: "Diego Robles", total: 10080 },
-        { empleado: "Jocelyn Santos", total: 555 },
-    ],
+  semanas: [
+    {
+      numero: 48,
+      dias: ["Do-01", "Lu-02", "Ma-03", "Mi-04", "Ju-05", "Vi-06", "Sa-07"],
+      empleados: [
+        { grupo: "Admins", nombre: "Anthony Vasquez", minutos: [143, 13, 10, 15, 1440, 9, 1440] },
+        { grupo: "Admins", nombre: "Diego Robles", minutos: [1440, 1440, 1440, 1440, 1440, 1440, 1440] },
+      ],
+    },
+  ],
 });
 
-// Filtros de búsqueda
-const filters = ref({
-    date: null,
-    schedule: "",
-    team: "",
-});
+const filteredData = computed(() => tableData.value);
 
-// Lista de empleados seleccionados
-const selectedEmployees = ref([]);
+function handleCellClick({ agente, dia, minutos }) {
+  // Capturar la información específica de la celda
+  currentAgent.value = agente;
+  selectedDay.value = dia;
+  selectedMinutes.value = minutos;
+  showModal.value = true;
+}
 
-// Filtrar datos según los filtros aplicados
-const filteredData = computed(() => {
-    return {
-        semanas: tableData.value.semanas.map((semana) => ({
-            ...semana,
-            empleados: semana.empleados.filter((empleado) =>
-                (!filters.value.team || empleado.grupo.includes(filters.value.team))
-            ),
-        })),
-        totalMensual: tableData.value.totalMensual.filter((total) =>
-            !filters.value.team || total.empleado.includes(filters.value.team)
-        ),
-    };
-});
+function saveEdit() {
+  console.log('Guardando cambios para:', {
+    agente: currentAgent.value,
+    dia: selectedDay.value,
+    minutos: selectedMinutes.value,
+  });
+  closeModal();
+}
 
-// Actualizar la lista de empleados seleccionados
-const updateSelectedEmployees = (selected) => {
-    selectedEmployees.value = selected;
-    console.log("Selected Employees:", selectedEmployees.value);
-    this.$emit("update-selected", selected)
-};
+function closeModal() {
+  showModal.value = false;
+}
 </script>
+
+<style scoped>
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 400px;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-save,
+.btn-close {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-close {
+  background-color: #ef4444;
+  margin-left: 0.5rem;
+}
+
+.btn-save:hover {
+  background-color: #2563eb;
+}
+
+.btn-close:hover {
+  background-color: #dc2626;
+}
+</style>

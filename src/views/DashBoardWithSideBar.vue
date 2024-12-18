@@ -23,7 +23,6 @@
                   </button>
                 </div>
               </TransitionChild>
-              <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4 ring-1 ring-white/10">
                 <div class="flex h-16 shrink-0 items-center">
                   <img class="h-14 w-auto mx-auto mt-5"
@@ -54,9 +53,7 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Static sidebar for desktop -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-      <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
         <div class="flex h-20 shrink-0 items-center">
           <img class="h-14 w-auto mt-9 mx-auto"
@@ -90,51 +87,6 @@
           <span class="sr-only">Open sidebar</span>
           <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         </button>
-
-        <!-- Separator -->
-        <div class="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
-
-        <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-          <form class="relative flex flex-1" action="#" method="GET">
-            <label for="search-field" class="sr-only">Search</label>
-            <MagnifyingGlassIcon class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-              aria-hidden="true" />
-            <input id="search-field"
-              class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-              placeholder="Search..." type="search" name="search" />
-          </form>
-          <div class="flex items-center gap-x-4 lg:gap-x-6">
-            <!-- Separator -->
-            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true" />
-            <!-- Profile dropdown -->
-            <Menu as="div" class="relative">
-              <MenuButton class="-m-1.5 flex items-center p-1.5">
-                <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full bg-gray-50"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt="" />
-                <span class="hidden lg:flex lg:items-center">
-                  <span class="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">Noe Ortiz</span>
-                  <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                </span>
-              </MenuButton>
-              <transition enter-active-class="transition ease-out duration-100"
-                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95">
-                <MenuItems
-                  class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                  <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
-                  <a :href="item.href" :class="[
-                    active ? 'bg-gray-50' : '',
-                    'block px-3 py-1 text-sm leading-6 text-gray-900'
-                  ]">{{ item.name }}</a>
-                  </MenuItem>
-                </MenuItems>
-              </transition>
-            </Menu>
-          </div>
-        </div>
       </div>
 
       <main class="py-5">
@@ -142,11 +94,8 @@
           <h1 class="text-4xl text-center text-white mb-3">
             <span class="pi pi-stopwatch" style="font-size: 1.9rem"></span> Schedule Agents VIVA
           </h1>
-          <!-- Componente SearchFilter -->
-          <SearchFilter :selectedEmployees="selectedEmployees" />
-          <!-- Componente TableAgentsSchedule -->
-          <TableAgentsSchedule :data="tableData" @update-selected="updateSelectedEmployees" />
-
+          <SearchFilter :selectedEmployees="selectedEmployees" @open-mass-edit="openMassEditModal" />
+          <TableAgentsSchedule @update-selected="updateSelectedEmployees" />
         </div>
       </main>
     </div>
@@ -154,17 +103,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 import {
   Dialog,
   DialogPanel,
-  Menu,
+  /* Menu,
   MenuButton,
   MenuItem,
-  MenuItems,
+  MenuItems, */
   TransitionChild,
   TransitionRoot
-} from '@headlessui/vue'
+} from '@headlessui/vue';
 import {
   Bars3Icon,
   CalendarIcon,
@@ -174,12 +123,14 @@ import {
   HomeIcon,
   UsersIcon,
   XMarkIcon
-} from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
-import SearchFilter from '@/components/SearchFilter.vue'
-import TableAgentsSchedule from './TableAgentsSchedule.vue'
-// Estado reactivo para la lista de empleados seleccionados
-const selectedEmployees = ref([])
+} from '@heroicons/vue/24/outline';/* 
+import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'; */
+import TableAgentsSchedule from './TableAgentsSchedule.vue';
+import SearchFilter from '@/components/SearchFilter.vue';
+
+const selectedEmployees = ref([]);
+const sidebarOpen = ref(false);
+
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
@@ -188,15 +139,15 @@ const navigation = [
   { name: 'Monitor', href: '#', icon: CalendarIcon, current: false },
   { name: 'Usuarios', href: '#', icon: DocumentDuplicateIcon, current: false },
   { name: 'Colas', href: '#', icon: ChartPieIcon, current: false }
-]
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' },
-  { name: 'Settings', href: '#' }
-]
-// Función para actualizar la lista de empleados seleccionados
-const updateSelectedEmployees = (selected) => {
-  selectedEmployees.value = selected
+];
+
+function updateSelectedEmployees(selected) {
+  selectedEmployees.value = selected;
 }
-const sidebarOpen = ref(true)
+
+
 </script>
+
+<style>
+/* Añadir estilos específicos si es necesario */
+</style>

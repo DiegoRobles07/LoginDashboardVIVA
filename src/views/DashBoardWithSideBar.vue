@@ -89,14 +89,26 @@
         </button>
       </div>
 
-      <main class="py-5">
-        <div class="px-4 sm:px-6 lg:px-8">
+      <main>
+        <div>
           <h1 class="text-4xl text-center text-white mb-3">
             <span class="pi pi-stopwatch" style="font-size: 1.9rem"></span> Schedule Agents VIVA
           </h1>
+          <!-- SearchFilter recibe los empleados seleccionados -->
           <SearchFilter :selectedEmployees="selectedEmployees" @open-mass-edit="openMassEditModal" />
-          <TableAgentsSchedule @update-selected="updateSelectedEmployees" />
+          <!-- TableAgentsSchedule actualiza los empleados seleccionados -->
         </div>
+        <div class="mt-2">
+          <TableAgentsSchedule @update-selected="updateSelectedEmployees" @cell-click="openIndividualEditModal" />
+        </div>
+
+        <!-- Modales -->
+        <MassEditModal :show="showMassEditModal" :employees="selectedEmployees" @close="closeMassEditModal"
+          @save="saveMassEdit" />
+
+
+        <IndividualEditModal :show="showIndividualEditModal" :data="currentEditData" @close="closeIndividualEditModal"
+          @save="saveIndividualEdit" />
       </main>
     </div>
   </div>
@@ -107,10 +119,6 @@ import { ref } from 'vue';
 import {
   Dialog,
   DialogPanel,
-  /* Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems, */
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue';
@@ -123,14 +131,17 @@ import {
   HomeIcon,
   UsersIcon,
   XMarkIcon
-} from '@heroicons/vue/24/outline';/* 
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'; */
-import TableAgentsSchedule from './TableAgentsSchedule.vue';
+} from '@heroicons/vue/24/outline';
+import TableAgentsSchedule from '@/views/TableAgentsSchedule.vue';
 import SearchFilter from '@/components/SearchFilter.vue';
+import MassEditModal from '@/components/modals/MassEditModal.vue';
+import IndividualEditModal from '@/components/modals/IndividualEditModal.vue';
 
 const selectedEmployees = ref([]);
 const sidebarOpen = ref(false);
-
+const showMassEditModal = ref(false); // Estado del modal de edición en masa
+const showIndividualEditModal = ref(false); // Estado del modal de edición individual
+const currentEditData = ref({ employee: '', day: '', minutes: 0 });
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
@@ -145,9 +156,39 @@ function updateSelectedEmployees(selected) {
   selectedEmployees.value = selected;
 }
 
+function openMassEditModal() {
+  if (selectedEmployees.value.length > 1) {
+    showMassEditModal.value = true;
+  } else {
+    alert("Selecciona al menos dos empleados para la edición en masa.");
+  }
+}
 
+
+function saveMassEdit(employees) {
+  console.log("Empleados guardados:", employees);
+  // Aquí puedes procesar los datos o enviarlos al backend
+  closeMassEditModal();
+}
+
+function closeMassEditModal() {
+  showMassEditModal.value = false;
+}
+
+function openIndividualEditModal({ agente, dia, minutos }) {
+  console.log('Datos recibidos para el modal:', { agente, dia, minutos });
+  currentEditData.value = { employee: agente.nombre, day: dia, minutes: minutos };
+  showIndividualEditModal.value = true;
+}
+
+function saveIndividualEdit() {
+  console.log('Guardando cambios individuales para:', currentEditData.value);
+  closeIndividualEditModal();
+}
+
+function closeIndividualEditModal() {
+  showIndividualEditModal.value = false;
+}
 </script>
 
-<style>
-/* Añadir estilos específicos si es necesario */
-</style>
+<style></style>

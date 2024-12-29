@@ -9,7 +9,7 @@
     </div>
 
     <!-- Combobox para Schedule -->
-    <div class="w-full lg:w-1/4 relative" ref="scheduleDropdown">
+    <div class="w-full lg:w-1/4 relative">
       <label for="schedule" class="block text-sm font-medium text-black">Horario</label>
       <input type="text" id="schedule" v-model="scheduleQuery" @input="filterScheduleOptions"
         @focus="showDropdown('schedule')"
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Combobox para Team -->
-    <div class="w-full lg:w-1/4 relative" ref="teamDropdown">
+    <div class="w-full lg:w-1/4 relative">
       <label for="team" class="block text-sm font-medium text-black">Equipo</label>
       <input type="text" id="team" v-model="teamQuery" @input="filterTeamOptions" @focus="showDropdown('team')"
         class="mt-1 block text-sm w-full h-10 border border-black rounded-lg shadow-sm" placeholder="Buscar..." />
@@ -47,8 +47,8 @@
 
     <!-- Botón de Modificar varios -->
     <div>
-      <button :disabled="!selectedEmployees || selectedEmployees.length === 0" @click="$emit('open-mass-edit')"
-        class="mt-5 btn-modify px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700">
+      <button :disabled="selectedEmployees.length < 2" @click="handleOpenMassEdit"
+        class="mt-5 px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700 disabled:bg-gray-400">
         Modificar
       </button>
     </div>
@@ -59,13 +59,11 @@
 import DatePicker from "primevue/datepicker";
 
 export default {
-  components: {
-    DatePicker,
-  },
+  components: { DatePicker },
   props: {
     selectedEmployees: {
       type: Array,
-      default: () => [],
+      required: true, // Obligatorio para habilitar/deshabilitar el botón
     },
   },
   data() {
@@ -123,25 +121,22 @@ export default {
         this.showScheduleDropdown = false;
       }
     },
-    handleClickOutside(event) {
-      if (this.$refs.scheduleDropdown && !this.$refs.scheduleDropdown.contains(event.target)) {
-        this.showScheduleDropdown = false;
-      }
-      if (this.$refs.teamDropdown && !this.$refs.teamDropdown.contains(event.target)) {
-        this.showTeamDropdown = false;
-      }
-    },
     emitFilters() {
+      console.log("Filtros aplicados:", this.localFilters);
       this.$emit("filter-change", { ...this.localFilters });
+    },
+    handleOpenMassEdit() {
+      console.log("Empleados seleccionados:", this.selectedEmployees);
+      if (this.selectedEmployees.length < 2) {
+        alert("Selecciona al menos dos empleados.");
+        return;
+      }
+      this.$emit("open-mass-edit");
     },
   },
   mounted() {
-    document.addEventListener("click", this.handleClickOutside);
     this.filteredScheduleOptions = this.scheduleOptions;
     this.filteredTeamOptions = this.teamOptions;
-  },
-  beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
   },
 };
 </script>
